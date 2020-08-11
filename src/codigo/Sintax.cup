@@ -1,0 +1,82 @@
+package codigo;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+    
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+}
+:};
+
+terminal Linea, Comillas, T_dato, Ent, Cadena, Yes, Otro_caso, Haz, Durante, Bucle,
+    Igual, Suma, Resta, Multiplicacion, Division, Op_logico, Op_relacional,
+    Op_atribucion, Op_incremento, Op_booleano, Parentesis_a, Parentesis_c,
+    Llave_a, Llave_c, Corchete_a, Corchete_c, Ejecutar, P_coma, Identificador, Coma, Mensaje, Escribe, 
+    Numero, ERROR;
+
+non terminal INICIO, SENTENCIA, DECLARACION, DECLARACION_BUCLE, YES, YES_ELSE,
+    DURANTE, HAZ_DURANTE, BUCLE, SENTENCIA_BOOLEANA, SENTENCIA_BUCLE, YES_OTRO_CASO, ESCRIBE, VAR;
+
+start with INICIO;
+
+INICIO ::= 
+    Ent Ejecutar Parentesis_a Parentesis_c Llave_a SENTENCIA Llave_c |
+    Ejecutar Parentesis_a Parentesis_c Llave_a SENTENCIA Llave_c
+;
+SENTENCIA ::=
+    DECLARACION |
+    SENTENCIA YES | 
+    YES |
+    SENTENCIA YES_OTRO_CASO |
+    YES_OTRO_CASO |
+    SENTENCIA DURANTE |
+    DURANTE |
+    SENTENCIA HAZ_DURANTE
+    HAZ_DURANTE |
+    SENTENCIA BUCLE |
+    BUCLE | ESCRIBE
+;
+
+DECLARACION ::= 
+    Ent Identificador P_coma
+;
+
+ESCRIBE ::=
+Escribe Parentesis_a Cadena Parentesis_c P_coma
+;
+
+YES ::= Yes Parentesis_a SENTENCIA_BOOLEANA Parentesis_c Llave_a SENTENCIA Llave_c
+;
+
+SENTENCIA_BOOLEANA ::= 
+    Op_booleano | 
+    Identificador Op_relacional Op_booleano |
+    Identificador Op_relacional Numero |
+    Identificador Op_relacional Identificador |
+    Identificador Op_relacional Comillas Comillas |
+    Identificador Op_relacional Comillas Identificador Comillas
+;
+YES_OTRO_CASO ::= Yes Parentesis_a SENTENCIA_BOOLEANA Parentesis_c Llave_a SENTENCIA Llave_c Otro_caso Llave_a SENTENCIA Llave_c
+;
+DURANTE ::= Durante Parentesis_a SENTENCIA_BOOLEANA Parentesis_c Llave_a SENTENCIA Llave_c
+;
+HAZ_DURANTE ::= Haz Llave_a SENTENCIA Llave_c Durante Parentesis_a SENTENCIA_BOOLEANA Parentesis_c P_coma
+;
+BUCLE ::= Bucle Parentesis_a SENTENCIA_BUCLE Parentesis_c Llave_a SENTENCIA Llave_c
+;
+SENTENCIA_BUCLE ::=
+    T_dato Identificador Igual Numero P_coma SENTENCIA_BOOLEANA P_coma DECLARACION_BUCLE |
+    Identificador Igual Numero P_coma SENTENCIA_BOOLEANA P_coma DECLARACION_BUCLE
+;
+DECLARACION_BUCLE ::= 
+    Identificador Op_atribucion Numero |
+    Identificador Op_incremento | 
+    Op_incremento Identificador
+;
